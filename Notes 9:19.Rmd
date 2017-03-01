@@ -1,0 +1,34 @@
+---
+title: "Notes 9/19"
+author: "Ryan Thomas"
+date: "September 19, 2015"
+output: html_document
+---
+setwd("~/Documents/r/directories/data/intro_data")
+
+Assigment: identify three data sets, write up a question to ask each data set, short argument for the relevance of the data
+
+Key terms/functions:
+`cbind()` column bind
+`c()` concatenate
+`lm()` linear regression
+
+Subseting the data in one go `SquidF <- Squid[Squid$Sex == 2,]` will create a new data set that contains on the the female (the code for female is 2). To merge (join) two data sets, similar to an outer join in SQL, you can type `SquidMerged <- merge(Sq1, Sq2, by = "Sample" , all = TRUE) ` to bring in all data (including NAs). To omit NAs, `all = FALSE`.
+
+Coursework:
+
+birdflu <- read.table("BirdFlu_corrected.txt", sep = "\t", head = TRUE)
+
+What Country has the most cases?
+```{r}
+birdflu$totalcases <- birdflu$cases03 + birdflu$cases04 + birdflu$cases05 + birdflu$cases06 + birdflu$cases07
+
+birdflu$Country[birdflu$totalcases == max(birdflu$totalcases)]
+
+```
+
+
+```{r}
+cases03_05 <- sum(birdflu$cases03) + sum(birdflu$cases05)
+read.table("directories/data/intro_data/BirdFlu_corrected.txt", sep = "\t", head = TRUE)
+```

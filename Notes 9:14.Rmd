@@ -1,0 +1,18 @@
+---
+title: "Intro to R Notes"
+author: "Ryan Thomas"
+date: "September 14, 2015"
+output: html_document
+---
+
+Assigment: identify three data sets, write up a question to ask each data set, short argument for the relevance of the data
+
+Key terms/functions:
+`cbind()` column bind
+`c()` concatenate
+`lm()` linear regression
+
+Subseting the data in one go `SquidF <- Squid[Squid$Sex == 2,]` will create a new data set that contains on the the female (the code for female is 2). To merge (join) two data sets, similar to an outer join in SQL, you can type `SquidMerged <- merge(Sq1, Sq2, by = "Sample" , all = TRUE) ` to bring in all data (including NAs). To omit NAs, `all = FALSE`.
+
+Coursework:
+birdflu <- read.table("directories/data/intro_data/BirdFlu_corrected.txt", sep = "\t", head = TRUE)

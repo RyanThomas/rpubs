@@ -1,0 +1,97 @@
+---
+title: "Functions"
+author: "Ryan Thomas"
+date: "December 29, 2015"
+output: html_document
+---
+
+```{r}
+
+#data
+x <- c(5,5,5,5,5,6,7,3,4,7,12,6,5,5)
+
+#mean
+fun.mean <- function(x) {
+      val <- sum(x)
+      tot <- length(x)
+      m = val/tot
+      return(m)
+}
+
+fun.mean(x)
+```
+
+```{r}
+# standard deviation and other stuff
+fun.sd <- function(x) {
+  x.val <- sum(x)
+  x.tot <- length(x)
+  x.m = x.val/x.tot
+  
+  x.var <- mean((x-mean(x))^2)
+  x.sd = sqrt(x.var)
+  
+  x.se = x.sd/sqrt(length(x))
+  
+    return(as.data.frame(c(x.m, x.var, x.sd, x.se),row.names = c("Mean", "Var", "SD", "SE")))
+}
+
+fun.sd(x)
+```
+
+```{r}
+#farenheight converter
+to.celsius <- function(f) {
+  
+  C = (f-32)*(5/9)
+  
+  return(C)
+}
+
+to.celsius(80)
+```
+
+
+Write a function to calculate the species richness (number of species) of each transect of the species-counts.txt file that contains data on the number of individuals of each species found in each transect.
+```{r}
+setwd("~/Documents/r/documents")
+species <- read.table("~/Documents/r/directories/data/intro_data/species_counts.txt", header = TRUE, sep = "\t")
+
+richness <- function(x){
+  d <- x[,2:ncol(x)]
+  d[d>0] <- 1
+  
+  d <- apply(d,2,sum)
+  
+  return(d)
+}
+```
+
+```{r}
+r <- richness(species)
+r
+```
+
+Simpson diversity index
+```{r}
+simpson <- function(x) {
+  d <- x[,2:ncol(x)]
+  d.sum <- sum(d)
+  p <- d/d.sum
+  index <- colSums(p)
+
+  return(index)
+}
+
+simpson(species)
+```
+
+```{r}
+plot(richness(species),simpson(species), 
+     pch = 16, 
+     xlab = "Richness (Number of Species per Transect)", 
+     ylab = "Simpson Diversity Index", 
+     main = "Simpson Diversity Index and Species Richness")
+```
+
+

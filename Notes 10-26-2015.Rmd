@@ -1,0 +1,72 @@
+---
+title: "Notes 10-26-2015"
+author: "Ryan Thomas"
+date: "October 26, 2015"
+output: html_document
+---
+
+Testing data using lm and summary
+First load the data
+
+```{r}
+Age <- c(18, 23, 25, 35, 65, 54, 34, 56, 72, 19, 23, 42, 18, 39, 37)
+Max.Rate <- c(202, 186, 187, 180, 156, 169, 174, 172, 153, 199, 193, 174, 198, 
+    183, 178)
+
+plot(Max.Rate ~ Age)
+```
+
+Now summarize the relationship:
+```{r}
+m <- lm(Max.Rate ~ Age)
+summary(m)
+```
+
+```{r}
+plot(Max.Rate~Age)
+abline(m)
+```
+
+Of course, ```m``` will have a lot more attributes than the ones shown in the summary.
+```{r}
+str(m)
+```
+
+
+```{r}
+coef(m)
+coef(m)[1]
+summary(resid(m))
+```
+
+Top-left - looking for a non-relationship to confirm there is no bias in the model. 
+
+Top-right Should be a straight line
+
+Bottom-left Looking for outliers in the data in the form of lines that do not fit the curve.
+
+Bottom-right Checking to see each point's influence on the model
+```{r}
+par(mfrow = c(2,2))
+plot(m)
+```
+
+
+Ok, the model looks good, so let's use it to predict the 
+```{r}
+predict(object = m, newdata = data.frame(Age = c(50, 60)) )
+
+plot(Age, Max.Rate)
+abline(m)
+ci.lwr <- predict(m, data.frame(Age = sort(Age)), level = 0.95, interval = "confidence")[, 
+    2]
+points(sort(Age), ci.lwr, type = "l", lty = 3)
+
+ci.upr <- predict(m, data.frame(Age = sort(Age)), level = 0.95, interval = "confidence")[, 
+    3]
+points(sort(Age), ci.upr, type = "l", lty = 3)
+points((predict(object = m, newdata = data.frame(Age = c(50, 60)) )), pch = 16, col = "red3")
+
+```
+
+

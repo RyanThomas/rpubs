@@ -1,0 +1,163 @@
+---
+title: "Housing Permits and New House Value"
+author: "Ryan Thomas"
+date: "December 30, 2015"
+output: html_document
+---
+
+What is the relationship of new housing permits and the price for new housing? Are places with the highest number of permits also having the highest new housing value? This study will use 2014 census data to examine the relationship between new housing units permits and the value of new housing units.
+Housing Units: http://www.census.gov/construction/bps/txt/tb3u2014.txt
+Permit Value: http://www.census.gov/construction/bps/txt/tb3v2014.txt
+
+```{r, echo=FALSE}
+setwd("~/Documents/r/directories/data")
+
+permits <- read.table("~/Documents/r/directories/data/permitsByMSA2014.txt", sep = "\t", header = TRUE)
+
+str(permits)
+```
+
+As expected, the value of housing increases consistently with the number of permits issued. 
+```{r, echo = FALSE}
+plot(permits$TotalV/1000, permits$TotalN, 
+     pch = 16, 
+     xlab = "Total Permit Value Thousands", 
+     ylab = "Total Number of Permits", 
+     main = "Number of Permits by Value")
+```
+
+
+However, if we control for the number of units and show the value of permits per unit, a different picture emerges. 
+```{r}
+one <- permits$OneV/permits$OneN
+two <- permits$TwoV/(permits$TwoN*2)
+three <- permits$ThreeFourV/(permits$ThreeFourN*3.5)
+five <- permits$FiveMoreV/(permits$FiveMoreN*6)
+
+perunit <- data.frame(cbind(one, two, three, five))
+colnames(perunit) <- c("one", "two", "three", "five")
+str(perunit)
+
+permits$single <- perunit$one
+permits$multi <- apply(perunit[,2:4], 1, mean, na.rm = TRUE)
+permits$perunit <- apply(perunit, 1, mean, na.rm = TRUE)
+summary(permits$single)
+summary(permits$multi)
+```
+
+What is the relationship between the total number of permits and the perunit value? The plot below shows this relationship, also differentiating between single unit permits and multi unit permits.
+```{r}
+par(mfrow = c(2,2))
+plot(permits$single[permits$multi <200], permits$TotalN[permits$multi <200],
+     pch = 16,
+     col = "grey",
+     ylab = "Total New Units",
+     main = "New Single Unit")
+abline(h=(mean(permits$TotalN[permits$multi <200])))
+abline(v=(mean(permits$single[permits$multi <200])))
+plot(permits$multi[permits$multi <200], permits$TotalN[permits$multi <200],
+     pch = 16,
+     col = "grey",
+     ylab = "",
+     main = "New Multi Unit")
+abline(v=(mean(permits$multi[permits$multi <200], na.rm = TRUE)))
+abline(h=(mean(permits$TotalN[permits$multi <200])))
+plot(permits$single[permits$multi <200], permits$Units[permits$multi <200]/1000,
+     pch = 16, 
+     #xlab = "Per Unit Permit Value (Thousands)", 
+     ylab = "Existing Units", 
+     main = "Value of New Permits")
+plot(permits$multi[permits$multi <200], permits$Units[permits$multi <200]/1000,
+     pch = 16, 
+     #xlab = "Per Unit Permit Value (Thousands)", 
+     ylab = "Existing Units", 
+     main = "Multi")
+```
+
+```{r}
+hist(permits$perunit, 20, 
+     col = "grey", 
+     main = "Histogram of Mean Price per Unit", 
+     xlab = "Price per Unit (Thousands)", 
+     axes = TRUE, 
+     plot = TRUE)
+ abline(v = mean(permits$perunit),col = "red")
+```
+
+Compare this to the median income to find out whether the average price per unit is affordable. #Need to incorporate data on median income.
+
+```{r}
+permits <- cbind(permits, one, two, three, five)
+
+par(mfrow = c(1,2),
+    main = "Number of Permits by Value Per Unit")
+hist(permits$single, breaks = seq(from = 0, to = 1500, by = 50), 
+     xlim = c(0,500),
+     ylim = c(0,300),
+     xlab = "One Unit",
+     main = "",
+     col = "grey")
+   abline(v = mean(permits$perunit),col = "red")
+   abline(v = mean(permits$one, na.rm = TRUE),col = "black")
+
+hist(permits$multi, breaks = seq(from = 0, to = 1500, by = 50), 
+     xlim = c(0,500),
+     ylim = c(0,300),
+     xlab = "Multi Units", 
+     main = "",
+     col = "grey")
+   abline(v = mean(permits$perunit),col = "red")
+   abline(v = mean(permits$two, na.rm = TRUE),col = "black")
+
+# hist(permits$three,breaks = seq(from = 0, to = 1500, by = 50), 
+#      xlim = c(0,500),
+#      ylim = c(0,300),
+#      xlab = "Three and Four Units", 
+#      main = "")
+#    abline(v = mean(permits$perunit),col = "red")
+#    abline(v = mean(permits$three, na.rm = TRUE),col = "black")
+# 
+# hist(permits$five, breaks = seq(from = 0, to = 1500, by = 50), 
+#       xlim = c(0,500),
+#       ylim = c(0,300),
+#       xlab = "Five and Over",
+#       main = "")
+#    abline(v = mean(permits$perunit),col = "red")
+#    abline(v = mean(permits$five, na.rm = TRUE),col = "black")
+   
+```
+
+
+
+```{r}
+par(mfrow = c(2,2))
+plot(glm(permits$single ~ permits$TotalN), pch = 16, col = "light grey")
+
+par(mfrow = c(2,2))
+plot(glm(permits$multi ~ permits$TotalN), pch = 16, col = "light grey")
+
+par(mfrow = c(2,2))
+plot(glm(permits$perunit ~ permits$TotalN), pch = 16, col = "light grey")
+```
+
+```{r}
+perunit.single <- data.frame(permits$single)
+perunit.single$type <- as.factor("Single")
+colnames(perunit.single) <- c("perunit", "type")
+
+perunit.multi <- data.frame(permits$multi)
+perunit.multi$type <- as.factor("Multi")
+colnames(perunit.multi) <- c("perunit", "type")
+
+perunit.anova <- rbind(perunit.single, perunit.multi)
+
+plot(perunit ~ type, data = perunit.anova, na.rm = TRUE, 
+     notch = TRUE,
+     main = "Difference in Means of Single and Multi Unit Permit Values")
+```
+
+```{r}
+lm.perunit.anova <- lm(perunit.anova)
+anova(lm.perunit.anova)
+```
+
