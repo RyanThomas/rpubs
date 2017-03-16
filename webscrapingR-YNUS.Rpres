@@ -1,0 +1,167 @@
+
+Webscraping in R 
+========================================================
+author: Ryan Thomas
+date: March 15, 2017
+autosize: false
+
+
+Assumptions
+========================================================
+incremental: true
+
+I'm assuming ...
+- that you have R installed,  
+- have a basic familiarity with how R works, and 
+- are familiar with at least one R interface (e.g. RStudio or the R command prompt). 
+  
+
+Audience
+=======================================================
+incremental: true
+- Introductions
+  - Interested/ just getting started
+  - Data-proficient
+  - Intermediate hackers
+  - Experienced R/python coders
+  
+- "Something for everyone and everything for no one." 
+  - (hopefully not)
+
+
+#Goals
+===
+- General process ("steps") for scraping a web page
+- Decide when it's appropriate to scrape a web page
+  - Tell if a page is scrapable before you start
+  - Make a difficulty/benefit estimation of a page's scrapability.
+  
+- Know where to look for help 
+  
+Knowing where to look ... lots of options
+========================================================
+
+- Base R : uses functions to sort through text
+- `rvest` :relies on pipes and built-in HTML tags
+- Google specific searches
+- Stack Overflow
+
+- Alternatives
+  - Chrome apps
+  - other R packages
+  - Python packages (beautifulsoup)
+  - many more ...
+
+Knowing where to look ... lots of options
+========================================================
+Other Presentations on Webscraping in R
+- [http://cpsievert.github.io/slides/web-scraping/20150612/#8](http://cpsievert.github.io/slides/web-scraping/20150612/#8)
+- [https://stat4701.github.io/edav/2015/04/02/rvest_tutorial/](https://stat4701.github.io/edav/2015/04/02/rvest_tutorial/)
+
+
+Overview
+===
+incremental: true
+- Why scrape a web page?
+  - Necessary concepts for  web scraping
+  - Most useful functions in `rvest`.
+  
+ ### WORM HOLE / TIME WARP
+
+- Examples
+  - Two examples in `rvest`
+  - Base R example
+
+Why Scrape?
+===
+incremental: true
+![cure-all](webscraping-imgs/ThackerysMiracleCure.jpg)
+
+Why Scrape?
+===
+Probably not the first option, but ...
+- Sometimes data are not accessible any other way
+- You want to <b>update</b> the data in the future
+- You need to download a lot of data <b>files</b>
+
+
+Prerequisites for rvest and web scraping
+===
+incremental: true
+- magrittr
+- HTML tags (in theory)
+- "Inspect Element"
+- sometimes loops 
+
+
+A Pre-requisite to rvest: magrittr
+====================================================
+incremental: true
+![This is not a pipe.](webscraping-imgs/MagrittePipe.jpg)
+
+# This <i>is</i> a pipe: %>%
+
+- The main advantage of piping is to <b>minimize the need for nesting functions</b>.
+
+- Piping is useful lots of other packages `ggplot` and `dplyr`
+
+
+Silly magrittr exmample
+====
+
+```{r echo=c(3,4)}
+library(magrittr)
+x <- seq(from=0, to=20, by=4) 
+t(cbind(x, x))
+x %>% cbind( ., x ) %>% t()
+```
+
+
+Prerequisites to webscraping: HTML tags
+===
+incremental: true
+`right-click` and selecting "view page source"
+![Source code for SciStarter.](webscraping-imgs/html-tags.png)
+- `<div>`
+- `<a href=...`
+- `<table>`
+
+Too many prerequisites - I'm not interested!
+===
+incremental: true
+![cry baby](webscraping-imgs/istock_sunemotion-1-frustrated-baby-crying-c.jpg)
+
+- You only need to be familiar, not an expert.
+- They will become second nature.
+- Don't worry, I will give you working code :)
+
+Now on to the scraping
+===
+incremental: true
+SciStarter website
+![Projects filtered by location "At the beach".](webscraping-imgs/scistarter.png)
+To scrape the projects info from this page, we need to take a look at the HTML tags. 
+
+
+Getting Familiar with the Website Tags
+===
+incremental: true
+`right click`  -> "Inspect Element"
+![Example of "Inspect Element" screen for SciStarter.](webscraping-imgs/scistarter_inspectelement.png)
+We will make an R data frame of all the projects on this website.
+
+
+Basic Functions in rvest
+===
+- Open up R or RStudio
+- Install `rvest` -> `install.packages('rvest')`. 
+- `?html_nodes()`
+- `?html_table()`
+- `?html_text()`
+
+
+Examples
+===
+
+Go to [https://rpubs.com/ryanthomas/YNUS-Webscraping-in-R](http://rpubs.com/ryanthomas/259139) for the rest of the workshop.
+
